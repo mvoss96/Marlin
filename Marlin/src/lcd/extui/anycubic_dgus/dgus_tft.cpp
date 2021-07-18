@@ -41,7 +41,9 @@
 #include "../../../libs/numtostr.h"
 //#include "../../../../libs/build_date.h"
 #include "../../../MarlinCore.h"
-#include "../../../feature/powerloss.h"
+#if ENABLED(POWER_LOSS_RECOVERY)
+  #include "../../../feature/powerloss.h"
+#endif
 
 namespace Anycubic {
 
@@ -398,31 +400,33 @@ namespace Anycubic {
     }
   }
 
-  void DgusTFT::FilamentRunout()  {
-    #if ACDEBUG(AC_MARLIN)
-      SERIAL_ECHOLNPAIR("FilamentRunout() printer_state ", printer_state);
-    
-    // 1 Signal filament out
-//    SendtoTFTLN(isPrintingFromMedia() ? AC_msg_filament_out_alert : AC_msg_filament_out_block);
-//    printer_state = AC_printer_filament_out;
+  #if ENABLED(FILAMENT_RUNOUT_SENSOR)
+    void DgusTFT::FilamentRunout()  {
+      #if ACDEBUG(AC_MARLIN)
+        SERIAL_ECHOLNPAIR("FilamentRunout() printer_state ", printer_state);
+      
+      // 1 Signal filament out
+  //    SendtoTFTLN(isPrintingFromMedia() ? AC_msg_filament_out_alert : AC_msg_filament_out_block);
+  //    printer_state = AC_printer_filament_out;
 
-      SERIAL_ECHOLNPAIR("getFilamentRunoutState: ", getFilamentRunoutState());
-    #endif
+        SERIAL_ECHOLNPAIR("getFilamentRunoutState: ", getFilamentRunoutState());
+      #endif
 
-    pop_up_index = 15;  // show filament lack.
-    
-    if(READ(FIL_RUNOUT_PIN) == FIL_RUNOUT_STATE) {
-      PlayTune(BEEPER_PIN, FilamentOut, 1);
+      pop_up_index = 15;  // show filament lack.
+      
+      if(READ(FIL_RUNOUT_PIN) == FIL_RUNOUT_STATE) {
+        PlayTune(BEEPER_PIN, FilamentOut, 1);
 
-      feedrate_back = getFeedrate_percent();
+        feedrate_back = getFeedrate_percent();
 
-      if(isPrintingFromMedia()) {
-        pausePrint();
-        printer_state = AC_printer_pausing;
-        pause_state = AC_paused_filament_lack;
+        if(isPrintingFromMedia()) {
+          pausePrint();
+          printer_state = AC_printer_pausing;
+          pause_state = AC_paused_filament_lack;
+        }
       }
     }
-  }
+  #endif
 
   void DgusTFT::ConfirmationRequest(const char * const msg)  {
     // M108 continue
@@ -547,8 +551,9 @@ namespace Anycubic {
         #if ACDEBUG(AC_MARLIN)
           SERIAL_ECHOLNPAIR("setFilamentRunoutState: ", __LINE__);
         #endif
-
+          #if ENABLED(FILAMENT_RUNOUT_SENSOR)
           setFilamentRunoutState(false);
+          #endif
         }
       } break;
 
@@ -1093,7 +1098,7 @@ namespace Anycubic {
              SendValueToTFT(2, ADDRESS_MOVE_DISTANCE);
              SendValueToTFT(getCaseLightState(), ADDRESS_SYSTEM_LED_STATUS);
              SendValueToTFT(getCaseLightState(), ADDRESS_PRINT_SETTING_LED_STATUS);
-
+              #if ENABLED(POWER_LOSS_RECOVERY)
              if(AC_printer_resuming_from_power_outage == printer_state) {
 
                 char filename[64] = { '\0' };
@@ -1104,6 +1109,9 @@ namespace Anycubic {
              } else {
                 ChangePageOfTFT(PAGE_MAIN);
              }
+             #else
+               ChangePageOfTFT(PAGE_MAIN);
+             #endif
 
            } else if((control_value&0x00FFFFFF) == 0x010000) {  // startup first gif
              PlayTune(BEEPER_PIN, Anycubic_PowerOn, 1);         // take 3500 ms
@@ -3001,7 +3009,9 @@ namespace Anycubic {
           {
             char filename[64] = { '\0' };
             ChangePageOfTFT(PAGE_OUTAGE_RECOVERY);
+            #if ENABLED(POWER_LOSS_RECOVERY)
             card.getLongPath(filename, recovery.info.sd_filename);
+            #endif
             filename[17] = '\0';
             SendTxtToTFT(filename, TXT_OUTAGE_RECOVERY_FILE);
 
@@ -3039,7 +3049,9 @@ namespace Anycubic {
           {
             char filename[64] = { '\0' };
             ChangePageOfTFT(PAGE_OUTAGE_RECOVERY);
+            #if ENABLED(POWER_LOSS_RECOVERY)
             card.getLongPath(filename, recovery.info.sd_filename);
+            #endif
             filename[17] = '\0';
             SendTxtToTFT(filename, TXT_OUTAGE_RECOVERY_FILE);
   
