@@ -1137,6 +1137,10 @@ namespace ExtUI {
 
 void MarlinUI::init() { ExtUI::onStartup(); }
 
+#if ENABLED(ANYCUBIC_LCD_DGUS)
+  void MarlinUI::param_init() { ExtUI::onParamInit(); }
+#endif
+
 void MarlinUI::update() { ExtUI::onIdle(); }
 
 void MarlinUI::kill_screen(PGM_P const error, PGM_P const component) {

@@ -1736,5 +1736,18 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
     }
 
   #endif // EEPROM_AUTO_INIT
+  #if ENABLED(ANYCUBIC_LCD_DGUS)
+    #if ENABLED(PREHEAT_BEFORE_LEVELING)
+    void MarlinUI::probe_preheating_start()
+    {
+        TERN_(EXTENSIBLE_UI, ExtUI::onStatusChanged("Probe preheat start"));
+    }
+
+    void MarlinUI::probe_preheating_stop()
+    {
+        TERN_(EXTENSIBLE_UI, ExtUI::onStatusChanged("Probe preheat stop"));
+    }
+    #endif
+  #endif
 
 #endif // EEPROM_SETTINGS

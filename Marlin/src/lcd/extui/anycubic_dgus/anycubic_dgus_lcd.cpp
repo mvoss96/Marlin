@@ -95,6 +95,10 @@ namespace ExtUI {
     memcpy(&Dgus.lcd_info_back, buff, sizeof(Dgus.lcd_info_back));
   }
 
+  void onPostprocessSettings() {
+    // Called after loading or resetting stored settings
+  }
+
   void onConfigurationStoreWritten(bool success) {
     // Called after the entire EEPROM has been written,
     // whether successful or not.

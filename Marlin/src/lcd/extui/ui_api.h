@@ -63,6 +63,11 @@ namespace ExtUI {
   enum fan_t      : uint8_t { FAN0, FAN1, FAN2, FAN3, FAN4, FAN5, FAN6, FAN7 };
   enum result_t   : uint8_t { PID_STARTED, PID_BAD_EXTRUDER_NUM, PID_TEMP_TOO_HIGH, PID_TUNING_TIMEOUT, PID_DONE };
 
+  #if ENABLED(ANYCUBIC_LCD_DGUS)
+    enum language_t : uint8_t { ENG, CHS };
+    enum audio_t    : uint8_t { ON, OFF };
+  #endif
+
   constexpr uint8_t extruderCount = EXTRUDERS;
   constexpr uint8_t hotendCount   = HOTENDS;
   constexpr uint8_t fanCount      = FAN_COUNT;
@@ -386,6 +391,7 @@ namespace ExtUI {
    * Should be declared by EXTENSIBLE_UI and will be called by Marlin
    */
   void onStartup();
+  void onParamInit();
   void onIdle();
   void onMediaInserted();
   void onMediaError();
@@ -412,6 +418,7 @@ namespace ExtUI {
   void onConfigurationStoreWritten(bool success);
   void onConfigurationStoreRead(bool success);
   #if ENABLED(POWER_LOSS_RECOVERY)
+    void onPowerLoss();
     void onPowerLossResume();
   #endif
   #if HAS_PID_HEATING

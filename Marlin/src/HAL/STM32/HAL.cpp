@@ -149,6 +149,11 @@ extern "C" {
 // ADC
 // ------------------------
 
+// somehow necessary for vyper stm32f1
+ADC_HandleTypeDef hadc1;
+DMA_HandleTypeDef hdma_adc1;
+uint32_t AD_DMA[3];
+
 // TODO: Make sure this doesn't cause any delay
 void HAL_adc_start_conversion(const uint8_t adc_pin) { HAL_adc_result = analogRead(adc_pin); }
 uint16_t HAL_adc_get_result() { return HAL_adc_result; }

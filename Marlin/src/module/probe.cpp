@@ -387,9 +387,15 @@ FORCE_INLINE void probe_specific_action(const bool deploy) {
     #endif
 
     DEBUG_EOL();
+    #if ENABLED(ANYCUBIC_LCD_DGUS)
+      ui.probe_preheating_start();
+    #endif
 
     TERN_(WAIT_FOR_NOZZLE_HEAT, if (hotend_temp > thermalManager.wholeDegHotend(0) + (TEMP_WINDOW)) thermalManager.wait_for_hotend(0));
     TERN_(WAIT_FOR_BED_HEAT,    if (bed_temp    > thermalManager.wholeDegBed() + (TEMP_BED_WINDOW)) thermalManager.wait_for_bed_heating());
+    #if ENABLED(ANYCUBIC_LCD_DGUS)
+      ui.probe_preheating_stop();
+    #endif
   }
 
 #endif
@@ -482,6 +488,13 @@ bool Probe::set_deployed(const bool deploy) {
  */
 bool Probe::probe_down_to_z(const_float_t z, const_feedRate_t fr_mm_s) {
   DEBUG_SECTION(log_probe, "Probe::probe_down_to_z", DEBUGGING(LEVELING));
+  
+  #if ENABLED(ANYCUBIC_LCD_DGUS)
+    OUT_WRITE(AUTO_LEVEL_TX_PIN, LOW);
+    delay(300);
+    OUT_WRITE(AUTO_LEVEL_TX_PIN, HIGH);
+    delay(100);
+  #endif
 
   #if BOTH(HAS_HEATED_BED, WAIT_FOR_BED_HEATER)
     thermalManager.wait_for_bed_heating();

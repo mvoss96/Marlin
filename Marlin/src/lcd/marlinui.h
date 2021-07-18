@@ -327,6 +327,11 @@ public:
   #if HAS_DISPLAY
 
     static void init();
+
+    #if ENABLED(ANYCUBIC_LCD_DGUS)
+      static void param_init();
+    #endif
+    
     static void update();
 
     static void abort_print();
@@ -575,6 +580,11 @@ public:
     #endif
   #endif
 
+  #if ENABLED(PREHEAT_BEFORE_LEVELING)
+    static void probe_preheating_start();
+    static void probe_preheating_stop();
+  #endif
+  
   //
   // Special handling if a move is underway
   //

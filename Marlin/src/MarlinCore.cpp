@@ -1341,7 +1341,10 @@ void setup() {
 
   SETUP_RUN(settings.first_load());   // Load data from EEPROM if available (or use defaults)
                                       // This also updates variables in the planner, elsewhere
-
+  #if ENABLED(ANYCUBIC_LCD_DGUS)
+    SETUP_RUN(ui.param_init());
+  #endif
+  
   #if HAS_ETHERNET
     SETUP_RUN(ethernet.init());
   #endif
